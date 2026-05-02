@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Android 면접 대비</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; color: #1a1a2e; min-height: 100vh; }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, #1a73e8, #0d47a1);
+    color: white; padding: 32px 20px 28px;
+    text-align: center;
+  }
+  .header-icon { font-size: 40px; margin-bottom: 8px; }
+  .header h1 { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+  .header p { font-size: 13px; opacity: 0.8; margin-top: 6px; }
+  .progress-wrap { margin-top: 18px; }
+  .progress-label { font-size: 12px; opacity: 0.85; margin-bottom: 6px; }
+  .progress-bar { height: 8px; background: rgba(255,255,255,0.25); border-radius: 10px; overflow: hidden; max-width: 300px; margin: 0 auto; }
+  .progress-fill { height: 100%; background: #69f0ae; border-radius: 10px; transition: width 0.6s ease; }
+
+  /* CONTAINER */
+  .container { max-width: 480px; margin: 0 auto; padding: 20px 16px 40px; }
+
+  /* SECTION TITLE */
+  .section-title {
+    font-size: 12px; font-weight: 700; color: #888;
+    letter-spacing: 1px; text-transform: uppercase;
+    margin: 24px 0 10px 4px;
+  }
+
+  /* CHAPTER CARD */
+  .chapter-card {
+    background: white; border-radius: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    overflow: hidden;
+    transition: transform 0.15s, box-shadow 0.15s;
+    cursor: pointer;
+    display: flex; align-items: stretch;
+    text-decoration: none; color: inherit;
+    border: 2px solid transparent;
+  }
+  .chapter-card:active { transform: scale(0.98); }
+  .chapter-card.available:hover { box-shadow: 0 6px 18px rgba(26,115,232,0.18); border-color: #1a73e8; }
+  .chapter-card.locked { cursor: default; opacity: 0.55; }
+
+  .card-accent { width: 6px; flex-shrink: 0; }
+  .card-body { padding: 16px 14px; flex: 1; }
+  .card-top { display: flex; align-items: center; justify-content: space-between; }
+  .card-num { font-size: 11px; font-weight: 700; color: #888; letter-spacing: 0.5px; }
+  .card-badge {
+    font-size: 11px; font-weight: 700; padding: 3px 10px;
+    border-radius: 20px;
+  }
+  .badge-done { background: #e8f5e9; color: #2e7d32; }
+  .badge-new { background: #e3f2fd; color: #1565c0; }
+  .badge-lock { background: #f5f5f5; color: #aaa; }
+  .badge-wip { background: #fff8e1; color: #e65100; }
+
+  .card-title { font-size: 16px; font-weight: 700; margin: 6px 0 4px; }
+  .card-sub { font-size: 12px; color: #888; line-height: 1.5; }
+  .card-meta { display: flex; gap: 12px; margin-top: 10px; }
+  .meta-item { font-size: 11px; color: #aaa; display: flex; align-items: center; gap: 3px; }
+
+  /* 점수 미니바 */
+  .score-mini { margin-top: 10px; }
+  .score-mini-label { font-size: 11px; color: #888; margin-bottom: 4px; display: flex; justify-content: space-between; }
+  .score-mini-bar { height: 5px; background: #f0f0f0; border-radius: 10px; overflow: hidden; }
+  .score-mini-fill { height: 100%; border-radius: 10px; transition: width 0.6s; }
+
+  /* STATS ROW */
+  .stats-row {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px; margin-bottom: 4px;
+  }
+  .stat-card {
+    background: white; border-radius: 14px;
+    padding: 14px 10px; text-align: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  }
+  .stat-num { font-size: 22px; font-weight: 800; color: #1a73e8; }
+  .stat-label { font-size: 11px; color: #aaa; margin-top: 3px; }
+
+  /* COMING SOON */
+  .coming-card {
+    background: white; border-radius: 14px;
+    padding: 14px 16px; margin-bottom: 10px;
+    display: flex; align-items: center; gap: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    opacity: 0.6;
+  }
+  .coming-dot { width: 8px; height: 8px; border-radius: 50%; background: #ddd; flex-shrink: 0; }
+  .coming-text { font-size: 13px; color: #aaa; }
+
+  /* ACCORDION */
+  .accordion {
+    background: white; border-radius: 18px;
+    margin-bottom: 14px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    overflow: hidden;
+    border: 2px solid transparent;
+    transition: border-color 0.2s;
+  }
+  .accordion.open { border-color: rgba(26,115,232,0.15); }
+  .acc-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 16px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+  }
+  .acc-header:active { background: #f5f7fa; }
+  .acc-left { display: flex; align-items: center; gap: 12px; }
+  .acc-icon {
+    width: 42px; height: 42px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .acc-title { font-size: 15px; font-weight: 800; color: #1a1a2e; }
+  .acc-sub { font-size: 11px; color: #aaa; margin-top: 2px; }
+  .acc-right { display: flex; align-items: center; gap: 8px; }
+  .acc-count { font-size: 11px; font-weight: 700; color: #aaa; background: #f0f2f5; padding: 3px 9px; border-radius: 20px; }
+  .acc-arrow { font-size: 11px; color: #bbb; transition: transform 0.3s; display: inline-block; }
+  .accordion.open .acc-arrow { transform: rotate(180deg); }
+  .acc-body {
+    padding: 0 12px 12px;
+    animation: slideDown 0.25s ease;
+  }
+  .acc-divider { height: 1px; background: #f0f2f5; margin: 0 4px 12px; }
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-icon">🤖</div>
+  <h1>Android 면접 대비</h1>
+  <p>신입 개발자를 위한 CS 문제풀이</p>
+  <div class="progress-wrap">
+    <div class="progress-label" id="progressLabel">전체 진도 0%</div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- 통계 -->
+  <div class="section-title">📊 나의 현황</div>
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-num" id="statChapters">0</div>
+      <div class="stat-label">완료 챕터</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="statProblems">0</div>
+      <div class="stat-label">푼 문제</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="statAvg">-</div>
+      <div class="stat-label">평균 정답률</div>
+    </div>
+  </div>
+
+  <!-- 섹션 목록 -->
+  <div class="section-title">📚 섹션 목록</div>
+
+  <!-- ── CS 섹션 ── -->
+  <div class="accordion" id="acc-cs">
+    <div class="acc-header" onclick="toggleSection('cs')">
+      <div class="acc-left">
+        <div class="acc-icon" style="background: linear-gradient(135deg,#1a73e8,#0d47a1);">💻</div>
+        <div>
+          <div class="acc-title">CS 기초</div>
+          <div class="acc-sub">운영체제 · 메모리 · 네트워크</div>
+        </div>
+      </div>
+      <div class="acc-right">
+        <span class="acc-count" id="acc-cs-count">2개 챕터</span>
+        <span class="acc-arrow" id="acc-cs-arrow">▼</span>
+      </div>
+    </div>
+    <div class="acc-body" id="acc-cs-body">
+      <div class="acc-divider"></div>
+      <!-- Chapter 1 -->
+      <div class="chapter-card available" onclick="openChapter(1)">
+        <div class="card-accent" style="background: linear-gradient(180deg, #1a73e8, #0d47a1);"></div>
+        <div class="card-body">
+          <div class="card-top">
+            <span class="card-num">CHAPTER 01</span>
+            <span class="card-badge badge-new" id="badge1">NEW</span>
+          </div>
+          <div class="card-title">프로세스 &amp; 스레드</div>
+          <div class="card-sub">프로세스/스레드 기초, 멀티스레드 문제 상황,<br>데드락, 동기화까지</div>
+          <div class="card-meta">
+            <span class="meta-item">📝 17문항</span>
+            <span class="meta-item">⏱ 약 10분</span>
+            <span class="meta-item">🏷 운영체제</span>
+          </div>
+          <div class="score-mini" id="scoreMini1" style="display:none;">
+            <div class="score-mini-label"><span>최근 점수</span><span id="scoreText1"></span></div>
+            <div class="score-mini-bar"><div class="score-mini-fill" id="scoreBar1" style="background:#1a73e8;"></div></div>
+          </div>
+        </div>
+      </div>
+      <!-- Chapter 2 -->
+      <div class="chapter-card available" onclick="openChapter(2)">
+        <div class="card-accent" style="background: linear-gradient(180deg, #2e7d32, #1b5e20);"></div>
+        <div class="card-body">
+          <div class="card-top">
+            <span class="card-num">CHAPTER 02</span>
+            <span class="card-badge badge-new" id="badge2">NEW</span>
+          </div>
+          <div class="card-title">가비지 컬렉션 (GC)</div>
+          <div class="card-sub">GC 기초, Mark &amp; Sweep, 세대별 관리,<br>현대적 GC 알고리즘, 안드로이드 실무까지</div>
+          <div class="card-meta">
+            <span class="meta-item">📝 27문항</span>
+            <span class="meta-item">⏱ 약 15분</span>
+            <span class="meta-item">🏷 메모리</span>
+          </div>
+          <div class="score-mini" id="scoreMini2" style="display:none;">
+            <div class="score-mini-label"><span>최근 점수</span><span id="scoreText2"></span></div>
+            <div class="score-mini-bar"><div class="score-mini-fill" id="scoreBar2" style="background:#2e7d32;"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Algorithm 섹션 ── -->
+  <div class="accordion" id="acc-algo">
+    <div class="acc-header" onclick="toggleSection('algo')">
+      <div class="acc-left">
+        <div class="acc-icon" style="background: linear-gradient(135deg,#f57c00,#e65100);">📐</div>
+        <div>
+          <div class="acc-title">Algorithm</div>
+          <div class="acc-sub">자료구조 · 정렬 · 탐색 · 동적 프로그래밍</div>
+        </div>
+      </div>
+      <div class="acc-right">
+        <span class="acc-count">준비 중</span>
+        <span class="acc-arrow" id="acc-algo-arrow">▼</span>
+      </div>
+    </div>
+    <div class="acc-body" id="acc-algo-body" style="display:none;">
+      <div class="acc-divider"></div>
+      <div class="coming-card"><div class="coming-dot"></div><div class="coming-text">Chapter 01 · 배열 &amp; 해시맵 (준비 중)</div></div>
+      <div class="coming-card"><div class="coming-dot"></div><div class="coming-text">Chapter 02 · 스택 &amp; 큐 &amp; 트리 (준비 중)</div></div>
+      <div class="coming-card"><div class="coming-dot"></div><div class="coming-text">Chapter 03 · 정렬 알고리즘 (준비 중)</div></div>
+      <div class="coming-card"><div class="coming-dot"></div><div class="coming-text">Chapter 04 · 동적 프로그래밍 (준비 중)</div></div>
+    </div>
+  </div>
+
+  <!-- ── Kotlin 섹션 ── -->
+  <div class="accordion" id="acc-kotlin">
+    <div class="acc-header" onclick="toggleSection('kotlin')">
+      <div class="acc-left">
+        <div class="acc-icon" style="background: linear-gradient(135deg,#7c4dff,#4527a0);">🦋</div>
+        <div>
+          <div class="acc-title">Kotlin</div>
+          <div class="acc-sub">언어 기초 · 코루틴 · 함수형 프로그래밍</div>
+        </div>
+      </div>
+      <div class="acc-right">
+        <span class="acc-count">준비 중</span>
+        <span class="acc-arrow" id="acc-kotlin-arrow">▼</span>
+      </div>
+    </div>
+    <div class="acc-body" id="acc-kotlin-body" style="display:none;">
+      <div class="acc-divider"></div>
+      <div class="coming-card"><div class="coming-dot"></div><div class="coming-text">Chapter 01 · Kotlin 언어 기초 (준비 중)</div></div>
+      <div class="coming-card"><div class="coming-dot"></div><div class="coming-text">Chapter 02 · 코루틴 &amp; 비동기 처리 (준비 중)</div></div>
+      <div class="coming-card"><div class="coming-dot"></div><div class="coming-text">Chapter 03 · 함수형 프로그래밍 &amp; 확장 함수 (준비 중)</div></div>
+    </div>
+  </div>
+
+  <!-- ── Android 섹션 ── -->
+  <div class="accordion" id="acc-android">
+    <div class="acc-header" onclick="toggleSection('android')">
+      <div class="acc-left">
+        <div class="acc-icon" style="background: linear-gradient(135deg,#00897b,#004d40);">🤖</div>
+        <div>
+          <div class="acc-title">Android</div>
+          <div class="acc-sub">생명주기 · Jetpack · 아키텍처 · UI</div>
+        </div>
+      </div>
+      <div class="acc-right">
+        <span class="acc-count">준비 중</span>
+        <span class="acc-arrow" id="acc-android-arrow">▼</span>
+      </div>
+    </div>
+    <div class="acc-body" id="acc-android-body" style="display:none;">
+      <div class="acc-divider"></div>
+      <div class="coming-card"><div class="coming-dot"></div><div class="coming-text">Chapter 01 · Activity &amp; Fragment 생명주기 (준비 중)</div></div>
+      <div class="coming-card"><div class="coming-dot"></div><div class="coming-text">Chapter 02 · ViewModel &amp; LiveData (준비 중)</div></div>
+      <div class="coming-card"><div class="coming-dot"></div><div class="coming-text">Chapter 03 · Jetpack Compose 기초 (준비 중)</div></div>
+      <div class="coming-card"><div class="coming-dot"></div><div class="coming-text">Chapter 04 · 네트워크 &amp; REST API (준비 중)</div></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- QUIZ SCREEN (동적으로 채워짐) -->
+<div id="quizScreen" style="display:none;"></div>
+
+<script>
+// ── 점수 저장 (메모리) ──
+const scores = {};
+
+// ── 섹션 아코디언 토글 ──
+const sectionState = { cs: true, algo: false, kotlin: false, android: false };
+
+function toggleSection(id) {
+  sectionState[id] = !sectionState[id];
+  const body = document.getElementById('acc-' + id + '-body');
+  const acc  = document.getElementById('acc-' + id);
+  if (sectionState[id]) {
+    body.style.display = 'block';
+    acc.classList.add('open');
+  } else {
+    body.style.display = 'none';
+    acc.classList.remove('open');
+  }
+}
+
+// CS 섹션은 기본으로 열려있음
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('acc-cs').classList.add('open');
+});
+
+function saveScore(chapterId, correct, total) {
+  scores[chapterId] = { correct, total, pct: Math.round(correct/total*100) };
+  updateStats();
+}
+
+function updateStats() {
+  const keys = Object.keys(scores);
+  document.getElementById('statChapters').textContent = keys.length;
+  const totalProblems = keys.reduce((s,k) => s + scores[k].total, 0);
+  document.getElementById('statProblems').textContent = totalProblems;
+  const avg = keys.length ? Math.round(keys.reduce((s,k)=>s+scores[k].pct,0)/keys.length) : null;
+  document.getElementById('statAvg').textContent = avg !== null ? avg+'%' : '-';
+  const totalChapters = 2;
+  const pct = Math.round(keys.length / totalChapters * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = `전체 진도 ${pct}%`;
+
+  // 챕터 1 점수 미니바
+  if (scores[1]) {
+    const s = scores[1];
+    document.getElementById('scoreMini1').style.display = 'block';
+    document.getElementById('scoreText1').textContent = `${s.correct}/${s.total} (${s.pct}%)`;
+    document.getElementById('scoreBar1').style.width = s.pct + '%';
+    document.getElementById('badge1').textContent = s.pct === 100 ? '✅ 완료' : '📝 재도전';
+    document.getElementById('badge1').className = 'card-badge ' + (s.pct===100 ? 'badge-done' : 'badge-wip');
+  }
+  // 챕터 2 점수 미니바
+  if (scores[2]) {
+    const s = scores[2];
+    document.getElementById('scoreMini2').style.display = 'block';
+    document.getElementById('scoreText2').textContent = `${s.correct}/${s.total} (${s.pct}%)`;
+    document.getElementById('scoreBar2').style.width = s.pct + '%';
+    document.getElementById('badge2').textContent = s.pct === 100 ? '✅ 완료' : '📝 재도전';
+    document.getElementById('badge2').className = 'card-badge ' + (s.pct===100 ? 'badge-done' : 'badge-wip');
+  }
+}
+
+// ── 화면 전환 ──
+function openChapter(id) {
+  document.getElementById('quizScreen').style.display = 'block';
+  document.body.querySelector('.header').style.display = 'none';
+  document.querySelector('.container').style.display = 'none';
+  if (id === 1) {
+    document.getElementById('quizScreen').innerHTML = buildChapter1Screen();
+  } else if (id === 2) {
+    document.getElementById('quizScreen').innerHTML = buildChapter2Screen();
+  }
+  window.scrollTo(0,0);
+}
+
+function goBack() {
+  document.getElementById('quizScreen').style.display = 'none';
+  document.getElementById('quizScreen').innerHTML = '';
+  document.body.querySelector('.header').style.display = '';
+  document.querySelector('.container').style.display = '';
+  window.scrollTo(0,0);
+}
+
+// ── 퀴즈 HTML 빌드 (챕터 1) ──
+function buildChapter1Screen() {
+  return `
+<div class="header" style="padding: 16px 20px; display:flex; align-items:center; gap:12px; text-align:left;">
+  <button onclick="goBack()" style="background:rgba(255,255,255,0.2);border:none;color:white;font-size:18px;width:36px;height:36px;border-radius:50%;cursor:pointer;flex-shrink:0;">←</button>
+  <div>
+    <div style="font-size:11px;opacity:0.75;">CHAPTER 01</div>
+    <div style="font-size:17px;font-weight:800;">프로세스 &amp; 스레드</div>
+  </div>
+  <div style="margin-left:auto;font-size:13px;font-weight:700;background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:20px;" id="quizScoreChip">📝 17문항</div>
+</div>
+<div id="quizContent">${buildQuiz()}</div>`;
+}
+function buildQuiz() {
+  return `
+<div style="max-width:680px;margin:0 auto;padding:16px;">
+
+  ${partCard('part1','#1a73e8,#0d47a1','📝 Part 1. 프로세스와 스레드 기초', `
+    <div class="qb">
+      <div class="qt">1. 프로그램이 실행되어 메모리에 적재된 상태를 <b class="bl">①</b>라고 하며, 이는 운영체제로부터 자원을 할당받는 <b class="bl">②</b> 단위이다.</div>
+      <div class="ir"><div class="iw"><span class="il">① 빈칸</span><input class="bi" id="p1q1a" data-answer="프로세스" placeholder=""></div><div class="iw"><span class="il">② 빈칸</span><input class="bi" id="p1q1b" data-answer="작업" placeholder=""></div></div>
+    </div>
+    <div class="qb">
+      <div class="qt">2. 프로세스 내에서 실제로 작업을 수행하는 실행 흐름을 <b class="bl">③</b>라고 하며, 이는 CPU의 <b class="bl">④</b> 단위이다.</div>
+      <div class="ir"><div class="iw"><span class="il">③ 빈칸</span><input class="bi" id="p1q2a" data-answer="스레드" placeholder=""></div><div class="iw"><span class="il">④ 빈칸</span><input class="bi" id="p1q2b" data-answer="최소 작업" placeholder=""></div></div>
+    </div>
+    <div class="qb">
+      <div class="qt">3. 스레드들은 프로세스의 공통 자원인 <b class="bl">⑤</b>, <b class="bl">⑥</b>, <b class="bl">⑦</b> 영역을 공유하지만, 각자의 함수 호출 기록을 관리하기 위해 <b class="bl">⑧</b> 영역은 독립적으로 가진다.</div>
+      <div class="ir">
+        <div class="iw"><span class="il">⑤ 공유1</span><input class="bi" id="p1q3a" data-answer="code" placeholder=""></div>
+        <div class="iw"><span class="il">⑥ 공유2</span><input class="bi" id="p1q3b" data-answer="data" placeholder=""></div>
+        <div class="iw"><span class="il">⑦ 공유3</span><input class="bi" id="p1q3c" data-answer="heap" placeholder=""></div>
+        <div class="iw"><span class="il">⑧ 독립</span><input class="bi" id="p1q3d" data-answer="stack" placeholder=""></div>
+      </div>
+    </div>
+  `)}
+
+  ${partCard('part2','#e53935,#b71c1c','🚩 Part 2. 멀티스레드 문제 상황', `
+    <div class="qb"><div class="slabel">[상황 A]</div><div class="sb">두 명의 요리사가 하나의 프라이팬을 동시에 잡으려다 요리가 엉망이 되었습니다. 실행 순서에 따라 결과가 달라지는 이 불안정한 상태는?</div>
+    <div class="ir"><div class="iw"><span class="il">답</span><input class="bi" id="p2q1" data-answer="경쟁 상태" placeholder=""></div></div></div>
+    <div class="qb"><div class="slabel">[상황 B]</div><div class="sb">철수와 영희가 좁은 복도에서 마주쳤습니다. 서로 비켜주려고 왼쪽, 오른쪽으로 동시에 움직이다가 결국 계속 길을 막고 서 있습니다. 스레드들이 멈춘 건 아니지만 실질적인 진행이 안 되는 이 상태는?</div>
+    <div class="ir"><div class="iw"><span class="il">답</span><input class="bi" id="p2q2" data-answer="라이브락" placeholder=""></div></div></div>
+    <div class="qb"><div class="slabel">[상황 C]</div><div class="sb">식당에서 VIP 손님이 왔는데, 먼저 온 일반 손님이 포크를 독점하고 놓아주지 않아 VIP 손님이 굶고 있습니다. 안드로이드 UI 스레드가 이런 상황에 처하면 ANR이 발생할 수 있습니다. 이 현상은?</div>
+    <div class="ir"><div class="iw"><span class="il">답</span><input class="bi" id="p2q3" data-answer="우선순위 역전" placeholder=""></div></div></div>
+  `)}
+
+  ${partCard('part3','#6d4c41,#3e2723','💀 Part 3. 데드락(Deadlock) 집중 공략', `
+    <div class="qb">
+      <div class="qt">1. 데드락이 발생하기 위한 4가지 필수 조건을 모두 쓰시오.</div>
+      <div class="ir">
+        <div class="iw"><span class="il">조건1</span><input class="bi" id="p3q1a" data-answer="상호 배제" placeholder=""></div>
+        <div class="iw"><span class="il">조건2</span><input class="bi" id="p3q1b" data-answer="점유와 대기" placeholder=""></div>
+        <div class="iw"><span class="il">조건3</span><input class="bi" id="p3q1c" data-answer="비선점" placeholder=""></div>
+        <div class="iw"><span class="il">조건4</span><input class="bi" id="p3q1d" data-answer="환형 대기" placeholder=""></div>
+      </div>
+    </div>
+    <div class="qb"><div class="qt">2. 데드락 해결 전략 중, 자원 할당 시 안전 여부를 미리 검사하는 방식을 <b class="bl">빈칸</b>라고 하며 대표적으로 은행원 알고리즘이 있다.</div>
+    <div class="ir"><div class="iw"><span class="il">답</span><input class="bi" id="p3q2" data-answer="회피" placeholder=""></div></div></div>
+    <div class="qb"><div class="qt">3. 현대 OS는 데드락 해결 비용이 더 크다고 판단하여 문제가 생기면 사용자가 직접 프로세스를 종료하게 두는 <b class="bl">빈칸</b> 전략을 주로 취한다.</div>
+    <div class="ir"><div class="iw"><span class="il">답</span><input class="bi" id="p3q3" data-answer="무시" placeholder=""></div></div></div>
+  `)}
+
+  ${partCard('part4','#2e7d32,#1b5e20','🔐 Part 4. 데이터 무결성과 동기화', `
+    <div class="qb"><div class="qt">1. 한 스레드가 수정한 값이 즉시 다른 스레드에게 전달되어야 함을 뜻하는 성질은 <b class="bl">①</b>이며, Java/Kotlin에서는 <b class="bl">②</b> 키워드로 이를 보장한다.</div>
+    <div class="ir"><div class="iw"><span class="il">① 성질</span><input class="bi" id="p4q1a" data-answer="가시성" placeholder=""></div><div class="iw"><span class="il">② 키워드</span><input class="bi" id="p4q1b" data-answer="volatile" placeholder=""></div></div></div>
+    <div class="qb"><div class="slabel">[상황 D]</div><div class="sb">"현재 값이 10이면 11로 바꿔라"라는 명령을 내렸을 때, 이 확인과 변경 과정 사이에 다른 스레드가 끼어들지 못하게 하는 최적화 기법은?</div>
+    <div class="ir"><div class="iw"><span class="il">답 (영문 약어)</span><input class="bi" id="p4q2" data-answer="cas" placeholder=""></div></div></div>
+    <div class="qb"><div class="qt">3. 여러 스레드가 동시에 접근해도 결과가 늘 올바른 상태를 가리켜 <b class="bl">빈칸</b> 하다고 표현한다. 안드로이드의 UI 컴포넌트는 대부분 이 성질을 가지고 있지 않다.</div>
+    <div class="ir"><div class="iw"><span class="il">답</span><input class="bi" id="p4q3" data-answer="스레드 안전" placeholder=""></div></div></div>
+    <div class="qb"><div class="qt">4. 이미 락을 획득한 스레드가 동일한 락 영역에 다시 진입할 수 있는 능력을 <b class="bl">빈칸</b>이라고 한다.</div>
+    <div class="ir"><div class="iw"><span class="il">답</span><input class="bi" id="p4q4" data-answer="재진입성" placeholder=""></div></div></div>
+  `)}
+
+  <div style="display:flex;gap:10px;justify-content:center;margin:20px 0;flex-wrap:wrap;">
+    <button onclick="submitQuiz()" style="padding:13px 28px;border-radius:12px;border:none;background:linear-gradient(135deg,#1a73e8,#0d47a1);color:white;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(26,115,232,0.35);">🎯 제출하고 채점하기</button>
+    <button onclick="resetQuiz()" style="padding:13px 28px;border-radius:12px;border:none;background:#f5f5f5;color:#555;font-size:14px;font-weight:700;cursor:pointer;">🔄 다시 풀기</button>
+  </div>
+
+  <div id="resultPanel" style="display:none;background:white;border-radius:16px;padding:24px;text-align:center;margin-bottom:20px;box-shadow:0 4px 16px rgba(0,0,0,0.1);">
+    <div id="resultScore" style="font-size:48px;font-weight:800;color:#1a73e8;"></div>
+    <div style="height:10px;border-radius:10px;background:#e0e0e0;margin:14px 0;overflow:hidden;"><div id="gradeFill" style="height:100%;border-radius:10px;background:linear-gradient(90deg,#1a73e8,#43a047);transition:width 0.8s;"></div></div>
+    <div id="resultSub" style="font-size:14px;color:#888;"></div>
+    <div id="resultMsg" style="font-size:16px;font-weight:700;margin-top:12px;"></div>
+    <button onclick="goBack()" style="margin-top:16px;padding:10px 24px;border-radius:10px;border:none;background:#e3f2fd;color:#1565c0;font-size:13px;font-weight:700;cursor:pointer;">← 메인으로 돌아가기</button>
+  </div>
+</div>
+
+<style>
+.pc{background:white;border-radius:16px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,.07);overflow:hidden;}
+.ph{padding:14px 18px;font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px;color:white;}
+.pb{padding:16px 18px;}
+.qb{margin-bottom:20px;}
+.qt{font-size:14px;line-height:1.7;color:#333;margin-bottom:10px;background:#f8f9fa;padding:12px 14px;border-radius:10px;}
+.bl{background:#e3f2fd;border:1.5px dashed #1a73e8;border-radius:6px;padding:1px 8px;font-size:12px;color:#1a73e8;font-weight:600;margin:0 2px;font-style:normal;}
+.sb{background:#fff8e1;border-left:4px solid #ffc107;border-radius:0 10px 10px 0;padding:12px 14px;font-size:13.5px;line-height:1.7;color:#555;margin-bottom:10px;}
+.slabel{font-weight:700;color:#e65100;margin-bottom:4px;font-size:13px;}
+.ir{display:flex;flex-wrap:wrap;gap:8px;}
+.iw{display:flex;flex-direction:column;gap:4px;flex:1;min-width:110px;}
+.il{font-size:11px;color:#888;font-weight:600;}
+.bi{border:2px solid #e0e0e0;border-radius:10px;padding:9px 12px;font-size:13px;outline:none;transition:border-color .2s,background .2s;width:100%;background:#fafafa;}
+.bi:focus{border-color:#1a73e8;background:white;}
+.bi.correct{border-color:#43a047;background:#f1f8e9;color:#2e7d32;font-weight:600;}
+.bi.wrong{border-color:#e53935;background:#ffebee;color:#c62828;}
+.fb{font-size:12px;margin-top:5px;padding:6px 10px;border-radius:8px;}
+.fb.correct{background:#f1f8e9;color:#2e7d32;}
+.fb.wrong{background:#ffebee;color:#c62828;}
+</style>
+`;
+}
+
+function partCard(id, gradient, title, inner) {
+  return `<div class="pc"><div class="ph" style="background:linear-gradient(90deg,${gradient});">${title}</div><div class="pb">${inner}</div></div>`;
+}
+
+// ── 챕터 2: GC 퀴즈 빌드 ──
+function buildChapter2Screen() {
+  return `
+<div class="header" style="padding: 16px 20px; display:flex; align-items:center; gap:12px; text-align:left; background: linear-gradient(135deg, #2e7d32, #1b5e20);">
+  <button onclick="goBack()" style="background:rgba(255,255,255,0.2);border:none;color:white;font-size:18px;width:36px;height:36px;border-radius:50%;cursor:pointer;flex-shrink:0;">←</button>
+  <div>
+    <div style="font-size:11px;opacity:0.75;">CHAPTER 02</div>
+    <div style="font-size:17px;font-weight:800;">가비지 컬렉션 (GC)</div>
+  </div>
+  <div style="margin-left:auto;font-size:13px;font-weight:700;background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:20px;" id="quizScoreChip2">📝 27문항</div>
+</div>
+<div id="quizContent2">${buildGCQuiz()}</div>`;
+}
+
+function buildGCQuiz() {
+  return `
+<div style="max-width:680px;margin:0 auto;padding:16px;">
+
+  ${partCard('gc1','#2e7d32,#1b5e20','🌱 Part 1. 기초 및 핵심 개념', `
+    <div class="qb">
+      <div class="qt">1. GC는 메모리 영역 중 <b class="bl">①</b> 영역에서 더 이상 사용되지 않는 객체를 찾아 삭제하는 역할을 한다.</div>
+      <div class="ir"><div class="iw"><span class="il">① 영역</span><input class="bi" id="gc1q1" data-answer="heap" placeholder=""></div></div>
+    </div>
+    <div class="qb">
+      <div class="qt">2. 개발자가 명시적으로 메모리를 해제하지 않아도 되므로 <b class="bl">②</b> 관리의 편의성이 높아진다.</div>
+      <div class="ir"><div class="iw"><span class="il">② 빈칸</span><input class="bi" id="gc1q2" data-answer="메모리" placeholder=""></div></div>
+    </div>
+    <div class="qb">
+      <div class="qt">3. GC는 객체가 살아있는지 판단하기 위해 시작점인 <b class="bl">③</b>(으)로부터의 연결 여부를 확인한다.</div>
+      <div class="ir"><div class="iw"><span class="il">③ 빈칸</span><input class="bi" id="gc1q3" data-answer="GC Root" placeholder=""></div></div>
+    </div>
+    <div class="qb">
+      <div class="qt">4. 참조 사슬이 연결되어 있으면 <b class="bl">④</b>, 연결이 끊어져 수거 대상이 되면 <b class="bl">⑤</b>(이)라고 부른다.</div>
+      <div class="ir">
+        <div class="iw"><span class="il">④ 생존 상태</span><input class="bi" id="gc1q4a" data-answer="reachable" placeholder=""></div>
+        <div class="iw"><span class="il">⑤ 수거 대상</span><input class="bi" id="gc1q4b" data-answer="unreachable" placeholder=""></div>
+      </div>
+    </div>
+    <div class="qb">
+      <div class="qt">5. 프로그램 실행 중인 스레드를 제외한 모든 스레드가 멈추는 현상을 <b class="bl">⑥</b>(이)라고 한다.</div>
+      <div class="ir"><div class="iw"><span class="il">⑥ 빈칸 (영문)</span><input class="bi" id="gc1q5" data-answer="stop the world" placeholder=""></div></div>
+    </div>
+    <div class="qb">
+      <div class="qt">6. ⑥ 시간이 길어지면 사용자 화면이 끊기는 <b class="bl">⑦</b> 현상이 발생하여 UX를 저해한다.</div>
+      <div class="ir"><div class="iw"><span class="il">⑦ 빈칸</span><input class="bi" id="gc1q6" data-answer="jank" placeholder=""></div></div>
+    </div>
+  `)}
+
+  ${partCard('gc2','#1565c0,#0d47a1','🔬 Part 2. 주요 알고리즘 및 세대별 관리', `
+    <div class="qb">
+      <div class="qt">7. 살아있는 객체를 골라내는 <b class="bl">⑧</b> 단계와 가비지를 지우는 <b class="bl">⑨</b> 단계는 GC의 기본 알고리즘이다.</div>
+      <div class="ir">
+        <div class="iw"><span class="il">⑧ 1단계</span><input class="bi" id="gc2q1a" data-answer="mark" placeholder=""></div>
+        <div class="iw"><span class="il">⑨ 2단계</span><input class="bi" id="gc2q1b" data-answer="sweep" placeholder=""></div>
+      </div>
+    </div>
+    <div class="qb">
+      <div class="qt">8. 메모리 파편화를 해결하기 위해 살아남은 객체들을 연속된 공간으로 모으는 과정은 <b class="bl">⑩</b>(이)다.</div>
+      <div class="ir"><div class="iw"><span class="il">⑩ 빈칸</span><input class="bi" id="gc2q2" data-answer="compaction" placeholder=""></div></div>
+    </div>
+    <div class="qb">
+      <div class="qt">9. "대부분의 객체는 금방 죽는다"는 가설은 <b class="bl">⑪</b> 가설이다.</div>
+      <div class="ir"><div class="iw"><span class="il">⑪ 빈칸</span><input class="bi" id="gc2q3" data-answer="약한 세대" placeholder=""></div></div>
+    </div>
+    <div class="qb">
+      <div class="qt">10. Young 영역 중 객체가 처음 생성되어 할당되는 구역은 <b class="bl">⑫</b> 영역이다.</div>
+      <div class="ir"><div class="iw"><span class="il">⑫ 빈칸</span><input class="bi" id="gc2q4" data-answer="eden" placeholder=""></div></div>
+    </div>
+    <div class="qb">
+      <div class="qt">11. Young 영역에는 두 개의 <b class="bl">⑬</b> 영역이 있으며, 이 중 한 곳은 반드시 비어있어야 한다.</div>
+      <div class="ir"><div class="iw"><span class="il">⑬ 빈칸</span><input class="bi" id="gc2q5" data-answer="survivor" placeholder=""></div></div>
+    </div>
+    <div class="qb">
+      <div class="qt">12. 객체의 나이를 의미하는 <b class="bl">⑭</b> 값이 임계치를 넘으면 Old 영역으로 이동한다.</div>
+      <div class="ir"><div class="iw"><span class="il">⑭ 빈칸</span><input class="bi" id="gc2q6" data-answer="age bit" placeholder=""></div></div>
+    </div>
+    <div class="qb">
+      <div class="qt">13. Young 영역에서 Old 영역으로 객체가 이동하는 현상을 <b class="bl">⑮</b>(이)라고 한다.</div>
+      <div class="ir"><div class="iw"><span class="il">⑮ 빈칸</span><input class="bi" id="gc2q7" data-answer="promotion" placeholder=""></div></div>
+    </div>
+  `)}
+
+  ${partCard('gc3','#6a1b9a,#4a148c','⚡ Part 3. 현대적 GC 알고리즘', `
+    <div class="qb">
+      <div class="qt">14. 힙을 고정된 크기의 <b class="bl">⑯</b>(으)로 나누어 효율적으로 관리하는 방식은 G1 GC이다.</div>
+      <div class="ir"><div class="iw"><span class="il">⑯ 빈칸</span><input class="bi" id="gc3q1" data-answer="region" placeholder=""></div></div>
+    </div>
+    <div class="qb">
+      <div class="qt">15. 대용량 힙에서도 STW를 10ms 이하로 유지하는 초저지연 GC는 <b class="bl">⑰</b>이다.</div>
+      <div class="ir"><div class="iw"><span class="il">⑰ 빈칸 (영문)</span><input class="bi" id="gc3q2" data-answer="zgc" placeholder=""></div></div>
+    </div>
+    <div class="qb">
+      <div class="qt">16. Young 영역을 청소하는 GC는 <b class="bl">⑱</b> GC이며, 상대적으로 속도가 빠르다.</div>
+      <div class="ir"><div class="iw"><span class="il">⑱ 빈칸</span><input class="bi" id="gc3q3" data-answer="minor" placeholder=""></div></div>
+    </div>
+    <div class="qb">
+      <div class="qt">17. Old 영역까지 모두 포함하여 청소하는 무거운 GC는 <b class="bl">⑲</b> GC이다.</div>
+      <div class="ir"><div class="iw"><span class="il">⑲ 빈칸</span><input class="bi" id="gc3q4" data-answer="major" placeholder=""></div></div>
+    </div>
+    <div class="qb">
+      <div class="qt">18. ART 런타임에서 백그라운드 시점에 적극적으로 수행하여 파편화를 방지하는 GC는 <b class="bl">⑳</b> GC이다.</div>
+      <div class="ir"><div class="iw"><span class="il">⑳ 빈칸</span><input class="bi" id="gc3q5" data-answer="compacting" placeholder=""></div></div>
+    </div>
+  `)}
+
+  ${partCard('gc4','#bf360c,#7f2c00','🤖 Part 4. 참조 유형 및 안드로이드 실무', `
+    <div class="qb">
+      <div class="qt">19. 메모리가 절대적으로 부족할 때만 수거되는 참조 유형은 <b class="bl">㉑</b> 참조이다.</div>
+      <div class="ir"><div class="iw"><span class="il">㉑ 빈칸</span><input class="bi" id="gc4q1" data-answer="soft" placeholder=""></div></div>
+    </div>
+    <div class="qb">
+      <div class="qt">20. GC가 발생하면 즉시 수거되는 <b class="bl">㉒</b> 참조는 안드로이드 메모리 누수 방지의 핵심이다.</div>
+      <div class="ir"><div class="iw"><span class="il">㉒ 빈칸</span><input class="bi" id="gc4q2" data-answer="weak" placeholder=""></div></div>
+    </div>
+    <div class="qb">
+      <div class="qt">21. 안드로이드의 최신 런타임인 <b class="bl">㉓</b>은 Dalvik에 비해 병렬 GC 성능이 대폭 개선되었다.</div>
+      <div class="ir"><div class="iw"><span class="il">㉓ 빈칸 (영문)</span><input class="bi" id="gc4q3" data-answer="art" placeholder=""></div></div>
+    </div>
+    <div class="qb">
+      <div class="qt">22. 짧은 시간에 객체를 대량 생성하여 GC가 빈번하게 발생하는 현상을 메모리 <b class="bl">㉔</b>(이)라고 한다.</div>
+      <div class="ir"><div class="iw"><span class="il">㉔ 빈칸</span><input class="bi" id="gc4q4" data-answer="churn" placeholder=""></div></div>
+    </div>
+    <div class="qb">
+      <div class="qt">23. 참조가 남아있어 GC가 수거하지 못해 발생하는 버그는 메모리 <b class="bl">㉕</b>(이)다.</div>
+      <div class="ir"><div class="iw"><span class="il">㉕ 빈칸</span><input class="bi" id="gc4q5" data-answer="leak" placeholder=""></div></div>
+    </div>
+    <div class="qb">
+      <div class="qt">24. 안드로이드에서 메모리 누수를 자동으로 탐지해주는 대표적인 오픈소스 도구는 <b class="bl">㉖</b>이다.</div>
+      <div class="ir"><div class="iw"><span class="il">㉖ 빈칸</span><input class="bi" id="gc4q6" data-answer="leakcanary" placeholder=""></div></div>
+    </div>
+    <div class="qb">
+      <div class="qt">25. 개발자가 직접 GC 실행을 요청하는 메서드는 <b class="bl">㉗</b>이지만, 실행이 보장되지는 않는다.</div>
+      <div class="ir"><div class="iw"><span class="il">㉗ 빈칸</span><input class="bi" id="gc4q7" data-answer="system.gc" placeholder=""></div></div>
+    </div>
+  `)}
+
+  <div style="display:flex;gap:10px;justify-content:center;margin:20px 0;flex-wrap:wrap;">
+    <button onclick="submitGCQuiz()" style="padding:13px 28px;border-radius:12px;border:none;background:linear-gradient(135deg,#2e7d32,#1b5e20);color:white;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(46,125,50,0.35);">🎯 제출하고 채점하기</button>
+    <button onclick="resetGCQuiz()" style="padding:13px 28px;border-radius:12px;border:none;background:#f5f5f5;color:#555;font-size:14px;font-weight:700;cursor:pointer;">🔄 다시 풀기</button>
+  </div>
+
+  <div id="gcResultPanel" style="display:none;background:white;border-radius:16px;padding:24px;text-align:center;margin-bottom:20px;box-shadow:0 4px 16px rgba(0,0,0,0.1);">
+    <div id="gcResultScore" style="font-size:48px;font-weight:800;color:#2e7d32;"></div>
+    <div style="height:10px;border-radius:10px;background:#e0e0e0;margin:14px 0;overflow:hidden;"><div id="gcGradeFill" style="height:100%;border-radius:10px;background:linear-gradient(90deg,#2e7d32,#66bb6a);transition:width 0.8s;"></div></div>
+    <div id="gcResultSub" style="font-size:14px;color:#888;"></div>
+    <div id="gcResultMsg" style="font-size:16px;font-weight:700;margin-top:12px;"></div>
+    <button onclick="goBack()" style="margin-top:16px;padding:10px 24px;border-radius:10px;border:none;background:#e8f5e9;color:#2e7d32;font-size:13px;font-weight:700;cursor:pointer;">← 메인으로 돌아가기</button>
+  </div>
+</div>
+
+<style>
+.pc{background:white;border-radius:16px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,.07);overflow:hidden;}
+.ph{padding:14px 18px;font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px;color:white;}
+.pb{padding:16px 18px;}
+.qb{margin-bottom:20px;}
+.qt{font-size:14px;line-height:1.7;color:#333;margin-bottom:10px;background:#f8f9fa;padding:12px 14px;border-radius:10px;}
+.bl{background:#e3f2fd;border:1.5px dashed #1a73e8;border-radius:6px;padding:1px 8px;font-size:12px;color:#1a73e8;font-weight:600;margin:0 2px;font-style:normal;}
+.sb{background:#fff8e1;border-left:4px solid #ffc107;border-radius:0 10px 10px 0;padding:12px 14px;font-size:13.5px;line-height:1.7;color:#555;margin-bottom:10px;}
+.slabel{font-weight:700;color:#e65100;margin-bottom:4px;font-size:13px;}
+.ir{display:flex;flex-wrap:wrap;gap:8px;}
+.iw{display:flex;flex-direction:column;gap:4px;flex:1;min-width:110px;}
+.il{font-size:11px;color:#888;font-weight:600;}
+.bi{border:2px solid #e0e0e0;border-radius:10px;padding:9px 12px;font-size:13px;outline:none;transition:border-color .2s,background .2s;width:100%;background:#fafafa;}
+.bi:focus{border-color:#1a73e8;background:white;}
+.bi.correct{border-color:#43a047;background:#f1f8e9;color:#2e7d32;font-weight:600;}
+.bi.wrong{border-color:#e53935;background:#ffebee;color:#c62828;}
+.fb{font-size:12px;margin-top:5px;padding:6px 10px;border-radius:8px;}
+.fb.correct{background:#f1f8e9;color:#2e7d32;}
+.fb.wrong{background:#ffebee;color:#c62828;}
+</style>
+`;
+}
+
+// ── GC 퀴즈 정답 ──
+const GC_ANSWERS = {
+  gc1q1: ['heap','힙'],
+  gc1q2: ['메모리','memory'],
+  gc1q3: ['gc root','gc roots','gc루트'],
+  gc1q4a: ['reachable','리처블'],
+  gc1q4b: ['unreachable','언리처블'],
+  gc1q5: ['stop the world','stop-the-world','stw'],
+  gc1q6: ['jank','janking','프레임 드랍','프레임드랍'],
+  gc2q1a: ['mark','마킹','마크'],
+  gc2q1b: ['sweep','쓸기','스윕'],
+  gc2q2: ['compaction','압축','컴팩션'],
+  gc2q3: ['약한 세대','약한세대','weak generational'],
+  gc2q4: ['eden','에덴'],
+  gc2q5: ['survivor','서바이버','생존자'],
+  gc2q6: ['age bit','age','나이'],
+  gc2q7: ['promotion','진급','프로모션'],
+  gc3q1: ['region','리전'],
+  gc3q2: ['zgc','z gc'],
+  gc3q3: ['minor','마이너'],
+  gc3q4: ['major','메이저','full'],
+  gc3q5: ['compacting','컴팩팅'],
+  gc4q1: ['soft','소프트'],
+  gc4q2: ['weak','약한','위크'],
+  gc4q3: ['art','android runtime'],
+  gc4q4: ['churn','처닝'],
+  gc4q5: ['leak','누수'],
+  gc4q6: ['leakcanary','leak canary'],
+  gc4q7: ['system.gc','system.gc()'],
+};
+
+function normGC(s){ return s.trim().toLowerCase().replace(/\s+/g,'').replace(/\(\)/g,''); }
+
+function submitGCQuiz(){
+  let correct=0, total=Object.keys(GC_ANSWERS).length;
+  Object.keys(GC_ANSWERS).forEach(id=>{
+    const inp=document.getElementById(id); if(!inp)return;
+    const ok=GC_ANSWERS[id].some(a=>normGC(a)===normGC(inp.value));
+    inp.classList.remove('correct','wrong');
+    inp.classList.add(ok?'correct':'wrong');
+    inp.disabled=true;
+    let fb=inp.parentElement.querySelector('.fb'); if(fb)fb.remove();
+    fb=document.createElement('div');
+    fb.className='fb '+(ok?'correct':'wrong');
+    fb.textContent=ok?'✓ 정답!':'✗ 정답: '+GC_ANSWERS[id][0];
+    inp.parentElement.appendChild(fb);
+    if(ok)correct++;
+  });
+  const pct=Math.round(correct/total*100);
+  document.getElementById('gcResultScore').textContent=`${correct} / ${total}`;
+  document.getElementById('gcGradeFill').style.width=pct+'%';
+  document.getElementById('gcResultSub').textContent=`정답률 ${pct}%`;
+  const msgs=['📚 다시 한번 정독하고 도전해봐요!','💪 절반 넘었어요! 조금만 더!','👏 거의 다 왔어요! 틀린 것만 복습!','🎉 완벽해요! 면접 합격각!'];
+  document.getElementById('gcResultMsg').textContent=msgs[pct===100?3:pct>=80?2:pct>=60?1:0];
+  document.getElementById('gcResultPanel').style.display='block';
+  document.getElementById('quizScoreChip2').textContent=`✅ ${correct}/${total}`;
+  document.getElementById('gcResultPanel').scrollIntoView({behavior:'smooth',block:'center'});
+  saveScore(2, correct, total);
+}
+
+function resetGCQuiz(){
+  Object.keys(GC_ANSWERS).forEach(id=>{
+    const inp=document.getElementById(id); if(!inp)return;
+    inp.value=''; inp.classList.remove('correct','wrong'); inp.disabled=false;
+    const fb=inp.parentElement.querySelector('.fb'); if(fb)fb.remove();
+  });
+  document.getElementById('gcResultPanel').style.display='none';
+  document.getElementById('quizScoreChip2').textContent='📝 27문항';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+const ANSWERS = {
+  p1q1a:['프로세스'], p1q1b:['작업','할당'],
+  p1q2a:['스레드'], p1q2b:['최소 작업','실행'],
+  p1q3a:['code','코드'], p1q3b:['data','데이터'],
+  p1q3c:['heap','힙'], p1q3d:['stack','스택'],
+  p2q1:['경쟁 상태','경쟁상태','race condition'],
+  p2q2:['라이브락','livelock','라이브 락'],
+  p2q3:['우선순위 역전','priority inversion'],
+  p3q1a:['상호 배제','상호배제'], p3q1b:['점유와 대기','점유 대기'],
+  p3q1c:['비선점'], p3q1d:['환형 대기','순환 대기'],
+  p3q2:['회피','avoidance'], p3q3:['무시','ignorance'],
+  p4q1a:['가시성','visibility'], p4q1b:['volatile'],
+  p4q2:['cas','compare and swap'],
+  p4q3:['스레드 안전','thread-safe','thread safe'],
+  p4q4:['재진입성','reentrancy'],
+};
+
+function norm(s){ return s.trim().toLowerCase().replace(/\s+/g,''); }
+
+function submitQuiz(){
+  let correct=0, total=Object.keys(ANSWERS).length;
+
+  // ⑤⑥⑦ 순서 무관 채점
+  const sharedIds = ['p1q3a','p1q3b','p1q3c'];
+  const sharedPool = ['code','data','heap','코드','데이터','힙'];
+  const sharedVals = sharedIds.map(id=>{const el=document.getElementById(id);return el?norm(el.value):'';});
+  const sharedCanonical = ['code','data','heap'];
+  // 각 입력값이 pool 안의 서로 다른 값에 매핑되는지 확인
+  const matched = [null,null,null]; // canonical index matched per input
+  const usedCanonical = new Set();
+  sharedVals.forEach((v,i)=>{
+    const ci = sharedCanonical.findIndex((c,idx)=>{
+      const aliases={'code':['code','코드'],'data':['data','데이터'],'heap':['heap','힙']};
+      return aliases[c].includes(v) && !usedCanonical.has(idx);
+    });
+    if(ci!==-1){matched[i]=ci;usedCanonical.add(ci);}
+  });
+
+  sharedIds.forEach((id,i)=>{
+    const inp=document.getElementById(id); if(!inp)return;
+    const ok=matched[i]!==null;
+    inp.classList.remove('correct','wrong');
+    inp.classList.add(ok?'correct':'wrong');
+    inp.disabled=true;
+    let fb=inp.parentElement.querySelector('.fb'); if(fb)fb.remove();
+    fb=document.createElement('div');
+    fb.className='fb '+(ok?'correct':'wrong');
+    fb.textContent=ok?'✓ 정답!':'✗ code / data / heap 중 하나';
+    inp.parentElement.appendChild(fb);
+    if(ok)correct++;
+  });
+
+  // 나머지 일반 채점
+  const skipIds = new Set(sharedIds);
+  Object.keys(ANSWERS).forEach(id=>{
+    if(skipIds.has(id))return;
+    const inp=document.getElementById(id); if(!inp)return;
+    const ok=ANSWERS[id].some(a=>norm(a)===norm(inp.value));
+    inp.classList.remove('correct','wrong');
+    inp.classList.add(ok?'correct':'wrong');
+    inp.disabled=true;
+    let fb=inp.parentElement.querySelector('.fb');
+    if(fb)fb.remove();
+    fb=document.createElement('div');
+    fb.className='fb '+(ok?'correct':'wrong');
+    fb.textContent=ok?'✓ 정답!':'✗ 정답: '+ANSWERS[id][0];
+    inp.parentElement.appendChild(fb);
+    if(ok)correct++;
+  });
+  const pct=Math.round(correct/total*100);
+  document.getElementById('resultScore').textContent=`${correct} / ${total}`;
+  document.getElementById('gradeFill').style.width=pct+'%';
+  document.getElementById('resultSub').textContent=`정답률 ${pct}%`;
+  const msgs=['📚 다시 한번 정독하고 도전해봐요!','💪 절반 넘었어요! 조금만 더!','👏 거의 다 왔어요! 틀린 것만 복습!','🎉 완벽해요! 면접 합격각!'];
+  document.getElementById('resultMsg').textContent=msgs[pct===100?3:pct>=80?2:pct>=60?1:0];
+  document.getElementById('resultPanel').style.display='block';
+  document.getElementById('quizScoreChip').textContent=`✅ ${correct}/${total}`;
+  document.getElementById('resultPanel').scrollIntoView({behavior:'smooth',block:'center'});
+  saveScore(1, correct, total);
+}
+
+function resetQuiz(){
+  Object.keys(ANSWERS).forEach(id=>{
+    const inp=document.getElementById(id); if(!inp)return;
+    inp.value=''; inp.classList.remove('correct','wrong'); inp.disabled=false;
+    const fb=inp.parentElement.querySelector('.fb'); if(fb)fb.remove();
+  });
+  document.getElementById('resultPanel').style.display='none';
+  document.getElementById('quizScoreChip').textContent='📝 17문항';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
