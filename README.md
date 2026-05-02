@@ -1,7 +1,8 @@
 # 안녕하세요 👋
 
-## 🤖 면접 대비 퀴즈
+## 면접 대비 퀴즈
 신입 Android 개발자를 위한 CS 문제풀이 앱입니다.
+
 CS 부터 시작해서 확장해나갈 예정입니다.
 
 [![퀴즈 바로가기](https://img.shields.io/badge/Android_면접퀴즈-바로가기-1a73e8?style=for-the-badge&logo=android)](https://thinkgylee.github.io/Interview-Quiz/)
@@ -28,6 +29,5 @@ CS 부터 시작해서 확장해나갈 예정입니다.
 
 <details>
 <summary><b>🤖 Android</b> · 준비 중</summary>
-</details>Sonnet 4.6
-
+</details>
 ---
