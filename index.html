@@ -184,7 +184,7 @@
         </div>
       </div>
       <div class="acc-right">
-        <span class="acc-count" id="acc-cs-count">2개 챕터</span>
+        <span class="acc-count" id="acc-cs-count">3개 챕터</span>
         <span class="acc-arrow" id="acc-cs-arrow">▼</span>
       </div>
     </div>
@@ -229,6 +229,27 @@
           <div class="score-mini" id="scoreMini2" style="display:none;">
             <div class="score-mini-label"><span>최근 점수</span><span id="scoreText2"></span></div>
             <div class="score-mini-bar"><div class="score-mini-fill" id="scoreBar2" style="background:#2e7d32;"></div></div>
+          </div>
+        </div>
+      </div>
+      <!-- Chapter 3 -->
+      <div class="chapter-card available" onclick="openChapter(3)">
+        <div class="card-accent" style="background: linear-gradient(180deg, #6a1b9a, #4a148c);"></div>
+        <div class="card-body">
+          <div class="card-top">
+            <span class="card-num">CHAPTER 03</span>
+            <span class="card-badge badge-new" id="badge3">NEW</span>
+          </div>
+          <div class="card-title">안드로이드 심화 &amp; 성능 최적화</div>
+          <div class="card-sub">메모리 누수, 참조 방식, 렌더링 최적화,<br>실무 패턴 &amp; 리소스 관리까지</div>
+          <div class="card-meta">
+            <span class="meta-item">📝 20문항</span>
+            <span class="meta-item">⏱ 약 12분</span>
+            <span class="meta-item">🏷 Android</span>
+          </div>
+          <div class="score-mini" id="scoreMini3" style="display:none;">
+            <div class="score-mini-label"><span>최근 점수</span><span id="scoreText3"></span></div>
+            <div class="score-mini-bar"><div class="score-mini-fill" id="scoreBar3" style="background:#6a1b9a;"></div></div>
           </div>
         </div>
       </div>
@@ -348,7 +369,7 @@ function updateStats() {
   document.getElementById('statProblems').textContent = totalProblems;
   const avg = keys.length ? Math.round(keys.reduce((s,k)=>s+scores[k].pct,0)/keys.length) : null;
   document.getElementById('statAvg').textContent = avg !== null ? avg+'%' : '-';
-  const totalChapters = 2;
+  const totalChapters = 3;
   const pct = Math.round(keys.length / totalChapters * 100);
   document.getElementById('progressFill').style.width = pct + '%';
   document.getElementById('progressLabel').textContent = `전체 진도 ${pct}%`;
@@ -371,6 +392,15 @@ function updateStats() {
     document.getElementById('badge2').textContent = s.pct === 100 ? '✅ 완료' : '📝 재도전';
     document.getElementById('badge2').className = 'card-badge ' + (s.pct===100 ? 'badge-done' : 'badge-wip');
   }
+  // 챕터 3 점수 미니바
+  if (scores[3]) {
+    const s = scores[3];
+    document.getElementById('scoreMini3').style.display = 'block';
+    document.getElementById('scoreText3').textContent = `${s.correct}/${s.total} (${s.pct}%)`;
+    document.getElementById('scoreBar3').style.width = s.pct + '%';
+    document.getElementById('badge3').textContent = s.pct === 100 ? '✅ 완료' : '📝 재도전';
+    document.getElementById('badge3').className = 'card-badge ' + (s.pct===100 ? 'badge-done' : 'badge-wip');
+  }
 }
 
 // ── 화면 전환 ──
@@ -382,6 +412,8 @@ function openChapter(id) {
     document.getElementById('quizScreen').innerHTML = buildChapter1Screen();
   } else if (id === 2) {
     document.getElementById('quizScreen').innerHTML = buildChapter2Screen();
+  } else if (id === 3) {
+    document.getElementById('quizScreen').innerHTML = buildChapter3Screen();
   }
   window.scrollTo(0,0);
 }
@@ -841,6 +873,218 @@ function resetQuiz(){
   });
   document.getElementById('resultPanel').style.display='none';
   document.getElementById('quizScoreChip').textContent='📝 17문항';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── 챕터 3: 안드로이드 심화 & 성능 최적화 ──
+function buildChapter3Screen() {
+  return `
+<div class="header" style="padding: 16px 20px; display:flex; align-items:center; gap:12px; text-align:left; background: linear-gradient(135deg, #6a1b9a, #4a148c);">
+  <button onclick="goBack()" style="background:rgba(255,255,255,0.2);border:none;color:white;font-size:18px;width:36px;height:36px;border-radius:50%;cursor:pointer;flex-shrink:0;">←</button>
+  <div>
+    <div style="font-size:11px;opacity:0.75;">CHAPTER 03</div>
+    <div style="font-size:17px;font-weight:800;">안드로이드 심화 &amp; 성능 최적화</div>
+  </div>
+  <div style="margin-left:auto;font-size:13px;font-weight:700;background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:20px;" id="quizScoreChip3">📝 20문항</div>
+</div>
+<div id="quizContent3">${buildAndroidQuiz()}</div>`;
+}
+
+function buildAndroidQuiz() {
+  return `
+<div style="max-width:680px;margin:0 auto;padding:16px;">
+
+  ${partCard('and1','#6a1b9a,#4a148c','🔍 Part 1. 메모리 누수와 Context', `
+    <div class="qb">
+      <div class="qt">1. 안드로이드 메모리 누수의 가장 흔한 원인은 수명 주기가 짧은 <b class="bl">①</b>를 수명 주기가 긴 객체(Static, Singleton 등)가 강하게 참조할 때 발생한다.</div>
+      <div class="ir"><div class="iw"><span class="il">① 빈칸</span><input class="bi" id="and1q1" data-answer="Activity Context" placeholder=""></div></div>
+    </div>
+    <div class="qb">
+      <div class="qt">2. 앱 전체의 생명 주기를 따르며 싱글톤 객체에서 참조해도 안전한 컨텍스트는 <b class="bl">②</b> 컨텍스트이다.</div>
+      <div class="ir"><div class="iw"><span class="il">② 빈칸</span><input class="bi" id="and1q2" data-answer="Application Context" placeholder=""></div></div>
+    </div>
+    <div class="qb">
+      <div class="qt">3. <b class="bl">③</b> 변수에 View나 Context를 저장하면 앱이 종료될 때까지 메모리에 남아있게 되므로 지양해야 한다.</div>
+      <div class="ir"><div class="iw"><span class="il">③ 빈칸</span><input class="bi" id="and1q3" data-answer="static" placeholder=""></div></div>
+    </div>
+    <div class="qb">
+      <div class="qt">4. 개발 단계에서 메모리 누수를 자동으로 감지하고 분석해 주는 필수 라이브러리는 <b class="bl">④</b>이다.</div>
+      <div class="ir"><div class="iw"><span class="il">④ 빈칸</span><input class="bi" id="and1q4" data-answer="LeakCanary" placeholder=""></div></div>
+    </div>
+    <div class="qb">
+      <div class="qt">5. 리스너나 콜백을 <code>onResume()</code>에서 등록했다면, 수명 주기에 맞춰 <b class="bl">⑤</b>에서 반드시 해제(unregister)해줘야 한다.</div>
+      <div class="ir"><div class="iw"><span class="il">⑤ 빈칸</span><input class="bi" id="and1q5" data-answer="onPause" placeholder=""></div></div>
+    </div>
+  `)}
+
+  ${partCard('and2','#1565c0,#0d47a1','🔗 Part 2. 4가지 참조 방식 (Reference)', `
+    <div class="qb">
+      <div class="qt">6. 우리가 흔히 사용하는 <code>new</code> 객체 참조 방식으로, 참조가 있으면 GC 수거 대상에서 제외되는 것은 <b class="bl">⑥</b> 참조이다.</div>
+      <div class="ir"><div class="iw"><span class="il">⑥ 빈칸</span><input class="bi" id="and2q1" data-answer="strong" placeholder=""></div></div>
+    </div>
+    <div class="qb">
+      <div class="qt">7. GC가 발생하면 참조 여부와 상관없이 무조건 수거 대상이 되어 메모리 누수 방지에 쓰이는 참조 방식은 <b class="bl">⑦</b>이다.</div>
+      <div class="ir"><div class="iw"><span class="il">⑦ 빈칸</span><input class="bi" id="and2q2" data-answer="WeakReference" placeholder=""></div></div>
+    </div>
+    <div class="qb">
+      <div class="qt">8. <b class="bl">⑧</b> 참조는 메모리가 극도로 부족하여 OOM이 발생하기 직전에만 수거되므로 캐시 구현에 주로 쓰인다.</div>
+      <div class="ir"><div class="iw"><span class="il">⑧ 빈칸</span><input class="bi" id="and2q3" data-answer="SoftReference" placeholder=""></div></div>
+    </div>
+    <div class="qb">
+      <div class="qt">9. 비동기 작업인 <code>Handler</code> 내부에서 액티비티를 참조할 때는 메모리 누수를 막기 위해 액티비티를 <b class="bl">⑨</b>로 감싸서 사용해야 한다.</div>
+      <div class="ir"><div class="iw"><span class="il">⑨ 빈칸</span><input class="bi" id="and2q4" data-answer="WeakReference" placeholder=""></div></div>
+    </div>
+  `)}
+
+  ${partCard('and3','#e53935,#b71c1c','🎨 Part 3. 화면 렌더링 및 렉(Jank) 최적화', `
+    <div class="qb">
+      <div class="qt">10. 안드로이드에서 초당 60프레임을 유지하기 위해 한 프레임을 그리는 데 허용되는 시간은 약 <b class="bl">⑩</b>ms이다.</div>
+      <div class="ir"><div class="iw"><span class="il">⑩ 숫자만</span><input class="bi" id="and3q1" data-answer="16" placeholder=""></div></div>
+    </div>
+    <div class="qb">
+      <div class="qt">11. 사용자에게 보이지 않는 배경까지 여러 번 겹쳐 그려 GPU에 과부하를 주는 현상을 <b class="bl">⑪</b>라고 한다.</div>
+      <div class="ir"><div class="iw"><span class="il">⑪ 빈칸</span><input class="bi" id="and3q2" data-answer="Overdraw" placeholder=""></div></div>
+    </div>
+    <div class="qb">
+      <div class="qt">12. <b class="bl">⑫</b> 레이아웃을 사용하면 뷰 계층 구조를 평평하게(Flat) 만들어 복잡한 레이아웃의 렌더링 성능을 높일 수 있다.</div>
+      <div class="ir"><div class="iw"><span class="il">⑫ 빈칸</span><input class="bi" id="and3q3" data-answer="ConstraintLayout" placeholder=""></div></div>
+    </div>
+    <div class="qb">
+      <div class="qt">13. 짧은 시간에 수많은 객체가 생성되고 소멸하여 GC가 자주 발생하는 현상을 <b class="bl">⑬</b>이라고 하며, 이는 화면 끊김의 원인이 된다.</div>
+      <div class="ir"><div class="iw"><span class="il">⑬ 빈칸</span><input class="bi" id="and3q4" data-answer="Memory Churn" placeholder=""></div></div>
+    </div>
+    <div class="qb">
+      <div class="qt">14. 레이아웃 인플레이트 비용을 줄이기 위해 화면에 당장 보이지 않는 뷰를 나중에 로드하도록 돕는 태그는 <b class="bl">⑭</b>이다.</div>
+      <div class="ir"><div class="iw"><span class="il">⑭ 빈칸</span><input class="bi" id="and3q5" data-answer="ViewStub" placeholder=""></div></div>
+    </div>
+    <div class="qb">
+      <div class="qt">15. 뷰의 계층 구조와 오버드로우 상태를 시각적으로 디버깅할 수 있는 도구는 <b class="bl">⑮</b>이다.</div>
+      <div class="ir"><div class="iw"><span class="il">⑮ 빈칸</span><input class="bi" id="and3q6" data-answer="Layout Inspector" placeholder=""></div></div>
+    </div>
+  `)}
+
+  ${partCard('and4','#00695c,#004d40','🛠 Part 4. 실무 패턴 및 리소스 최적화', `
+    <div class="qb">
+      <div class="qt">16. <b class="bl">⑯</b>은 액티비티보다 수명이 길어 데이터를 안전하게 유지하며, 내부에서 <code>context</code>를 참조하지 않도록 설계해야 한다.</div>
+      <div class="ir"><div class="iw"><span class="il">⑯ 빈칸</span><input class="bi" id="and4q1" data-answer="ViewModel" placeholder=""></div></div>
+    </div>
+    <div class="qb">
+      <div class="qt">17. 리스트 뷰에서 변경된 부분만 효율적으로 계산하여 업데이트해 주는 도구는 <b class="bl">⑰</b>이다.</div>
+      <div class="ir"><div class="iw"><span class="il">⑰ 빈칸</span><input class="bi" id="and4q2" data-answer="DiffUtil" placeholder=""></div></div>
+    </div>
+    <div class="qb">
+      <div class="qt">18. 고해상도 이미지를 로딩할 때 메모리 부족을 막기 위해 이미지 크기를 줄여서 로드하는 기법을 <b class="bl">⑱</b>이라고 한다.</div>
+      <div class="ir"><div class="iw"><span class="il">⑱ 빈칸</span><input class="bi" id="and4q3" data-answer="Downsampling" placeholder=""></div></div>
+    </div>
+    <div class="qb">
+      <div class="qt">19. <b class="bl">⑲</b>는 비동기 작업 시 호출한 곳의 수명 주기에 맞춰 작업을 자동으로 취소해 주어 메모리 누수를 방지해 준다.</div>
+      <div class="ir"><div class="iw"><span class="il">⑲ 빈칸</span><input class="bi" id="and4q4" data-answer="CoroutineScope" placeholder=""></div></div>
+    </div>
+    <div class="qb">
+      <div class="qt">20. Hilt를 사용할 때, 앱 전체에서 공유되어야 하는 객체는 <b class="bl">⑳</b> 스코프를 지정하여 관리한다.</div>
+      <div class="ir"><div class="iw"><span class="il">⑳ 빈칸 (어노테이션)</span><input class="bi" id="and4q5" data-answer="@Singleton" placeholder=""></div></div>
+    </div>
+  `)}
+
+  <div style="display:flex;gap:10px;justify-content:center;margin:20px 0;flex-wrap:wrap;">
+    <button onclick="submitAndroidQuiz()" style="padding:13px 28px;border-radius:12px;border:none;background:linear-gradient(135deg,#6a1b9a,#4a148c);color:white;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(106,27,154,0.35);">🎯 제출하고 채점하기</button>
+    <button onclick="resetAndroidQuiz()" style="padding:13px 28px;border-radius:12px;border:none;background:#f5f5f5;color:#555;font-size:14px;font-weight:700;cursor:pointer;">🔄 다시 풀기</button>
+  </div>
+
+  <div id="androidResultPanel" style="display:none;background:white;border-radius:16px;padding:24px;text-align:center;margin-bottom:20px;box-shadow:0 4px 16px rgba(0,0,0,0.1);">
+    <div id="androidResultScore" style="font-size:48px;font-weight:800;color:#6a1b9a;"></div>
+    <div style="height:10px;border-radius:10px;background:#e0e0e0;margin:14px 0;overflow:hidden;"><div id="androidGradeFill" style="height:100%;border-radius:10px;background:linear-gradient(90deg,#6a1b9a,#ab47bc);transition:width 0.8s;"></div></div>
+    <div id="androidResultSub" style="font-size:14px;color:#888;"></div>
+    <div id="androidResultMsg" style="font-size:16px;font-weight:700;margin-top:12px;"></div>
+    <button onclick="goBack()" style="margin-top:16px;padding:10px 24px;border-radius:10px;border:none;background:#f3e5f5;color:#6a1b9a;font-size:13px;font-weight:700;cursor:pointer;">← 메인으로 돌아가기</button>
+  </div>
+</div>
+
+<style>
+.pc{background:white;border-radius:16px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,.07);overflow:hidden;}
+.ph{padding:14px 18px;font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px;color:white;}
+.pb{padding:16px 18px;}
+.qb{margin-bottom:20px;}
+.qt{font-size:14px;line-height:1.7;color:#333;margin-bottom:10px;background:#f8f9fa;padding:12px 14px;border-radius:10px;}
+.bl{background:#e3f2fd;border:1.5px dashed #1a73e8;border-radius:6px;padding:1px 8px;font-size:12px;color:#1a73e8;font-weight:600;margin:0 2px;font-style:normal;}
+.sb{background:#fff8e1;border-left:4px solid #ffc107;border-radius:0 10px 10px 0;padding:12px 14px;font-size:13.5px;line-height:1.7;color:#555;margin-bottom:10px;}
+.slabel{font-weight:700;color:#e65100;margin-bottom:4px;font-size:13px;}
+.ir{display:flex;flex-wrap:wrap;gap:8px;}
+.iw{display:flex;flex-direction:column;gap:4px;flex:1;min-width:110px;}
+.il{font-size:11px;color:#888;font-weight:600;}
+.bi{border:2px solid #e0e0e0;border-radius:10px;padding:9px 12px;font-size:13px;outline:none;transition:border-color .2s,background .2s;width:100%;background:#fafafa;}
+.bi:focus{border-color:#1a73e8;background:white;}
+.bi.correct{border-color:#43a047;background:#f1f8e9;color:#2e7d32;font-weight:600;}
+.bi.wrong{border-color:#e53935;background:#ffebee;color:#c62828;}
+.fb{font-size:12px;margin-top:5px;padding:6px 10px;border-radius:8px;}
+.fb.correct{background:#f1f8e9;color:#2e7d32;}
+.fb.wrong{background:#ffebee;color:#c62828;}
+</style>
+`;
+}
+
+// ── 챕터 3 정답 ──
+const ANDROID_ANSWERS = {
+  and1q1: ['activitycontext','activity context','activity','액티비티','액티비티 컨텍스트'],
+  and1q2: ['applicationcontext','application context','application','애플리케이션','애플리케이션 컨텍스트','앱'],
+  and1q3: ['static','정적','스태틱'],
+  and1q4: ['leakcanary','leak canary'],
+  and1q5: ['onpause','onpause()','onStop','onstop()'],
+  and2q1: ['strong','강한','강한 참조','strongreference'],
+  and2q2: ['weakreference','weak reference','약한 참조','약한참조','weak'],
+  and2q3: ['softreference','soft reference','소프트 참조','soft','소프트참조'],
+  and2q4: ['weakreference','weak reference','약한 참조','약한참조','weak'],
+  and3q1: ['16','16ms','16.6','16.6ms'],
+  and3q2: ['overdraw','오버드로우','중복 그리기','중복그리기'],
+  and3q3: ['constraintlayout','constraint layout','컨스트레인트레이아웃','컨스트레인트 레이아웃'],
+  and3q4: ['memorychurn','memory churn','메모리 처닝','메모리처닝','churn','처닝'],
+  and3q5: ['viewstub','view stub','뷰스텁','뷰 스텁'],
+  and3q6: ['layout inspector','layoutinspector','레이아웃 인스펙터','레이아웃인스펙터','gpu overdraw'],
+  and4q1: ['viewmodel','뷰모델','view model'],
+  and4q2: ['diffutil','diff util','디프유틸','디프 유틸'],
+  and4q3: ['downsampling','다운샘플링','resizing','리사이징'],
+  and4q4: ['coroutinescope','coroutine scope','코루틴스코프','코루틴 스코프','viewmodelscope','lifecyclescope','lifecycleScope','viewModelScope'],
+  and4q5: ['@singleton','singleton','싱글톤','@싱글톤'],
+};
+
+function normAnd(s){ return s.trim().toLowerCase().replace(/\s+/g,'').replace(/\(\)/g,'').replace(/@/g,''); }
+
+function submitAndroidQuiz(){
+  let correct=0, total=Object.keys(ANDROID_ANSWERS).length;
+  Object.keys(ANDROID_ANSWERS).forEach(id=>{
+    const inp=document.getElementById(id); if(!inp)return;
+    const userNorm = normAnd(inp.value);
+    const ok = ANDROID_ANSWERS[id].some(a => normAnd(a) === userNorm);
+    inp.classList.remove('correct','wrong');
+    inp.classList.add(ok?'correct':'wrong');
+    inp.disabled=true;
+    let fb=inp.parentElement.querySelector('.fb'); if(fb)fb.remove();
+    fb=document.createElement('div');
+    fb.className='fb '+(ok?'correct':'wrong');
+    fb.textContent=ok?'✓ 정답!':'✗ 정답: '+ANDROID_ANSWERS[id][0];
+    inp.parentElement.appendChild(fb);
+    if(ok)correct++;
+  });
+  const pct=Math.round(correct/total*100);
+  document.getElementById('androidResultScore').textContent=`${correct} / ${total}`;
+  document.getElementById('androidGradeFill').style.width=pct+'%';
+  document.getElementById('androidResultSub').textContent=`정답률 ${pct}%`;
+  const msgs=['📚 다시 한번 정독하고 도전해봐요!','💪 절반 넘었어요! 조금만 더!','👏 거의 다 왔어요! 틀린 것만 복습!','🎉 완벽해요! 면접 합격각!'];
+  document.getElementById('androidResultMsg').textContent=msgs[pct===100?3:pct>=80?2:pct>=60?1:0];
+  document.getElementById('androidResultPanel').style.display='block';
+  document.getElementById('quizScoreChip3').textContent=`✅ ${correct}/${total}`;
+  document.getElementById('androidResultPanel').scrollIntoView({behavior:'smooth',block:'center'});
+  saveScore(3, correct, total);
+}
+
+function resetAndroidQuiz(){
+  Object.keys(ANDROID_ANSWERS).forEach(id=>{
+    const inp=document.getElementById(id); if(!inp)return;
+    inp.value=''; inp.classList.remove('correct','wrong'); inp.disabled=false;
+    const fb=inp.parentElement.querySelector('.fb'); if(fb)fb.remove();
+  });
+  document.getElementById('androidResultPanel').style.display='none';
+  document.getElementById('quizScoreChip3').textContent='📝 20문항';
   window.scrollTo({top:0,behavior:'smooth'});
 }
 </script>
